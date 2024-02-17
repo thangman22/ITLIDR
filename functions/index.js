@@ -1,7 +1,7 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-exports.summaryArticle = onRequest({cors: true },async (request, response) => {
+exports.summaryArticle = onRequest({cors: true, region: 'asia-southeast1' },async (request, response) => {
     const {extract} = await import("@extractus/article-extractor")
     const genAI = new GoogleGenerativeAI("AIzaSyBkE6NvM3nPGeTBjYwWxj-1ijKY6h7fvYQ");
     const model = genAI.getGenerativeModel({ model: "gemini-pro"});

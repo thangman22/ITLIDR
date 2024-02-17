@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/summaryArticle",
+        "function": "summaryArticle"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
