@@ -1,0 +1,53 @@
+{
+    "theme_color": "#020617",
+    "background_color": "#020617",
+    "icons": [
+        {
+            "purpose": "maskable",
+            "sizes": "512x512",
+            "src": "/assets/icon512_maskable.png",
+            "type": "image/png"
+        },
+        {
+            "purpose": "any",
+            "sizes": "512x512",
+            "src": "/assets/icon512_rounded.png",
+            "type": "image/png"
+        }
+    ],
+    "orientation": "portrait",
+    "display": "standalone",
+    "dir": "auto",
+    "lang": "en-US",
+    "short_name": "ITLIDR",
+    "name": "It Too Long I Don't Read",
+    "start_url": "/",
+    "scope": "/",
+    "description": "It Too Long I Don't Read = Summary Article / News for you with GenAI",
+    "screenshots": [
+        {
+            "src": "/assets/screenshot-narrow-2.png",
+            "type": "image/png",
+            "sizes": "540x1170",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/assets/screenshot-narrow.png",
+            "type": "image/png",
+            "sizes": "540x1170",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/assets/screenshot-wide-2.png",
+            "type": "image/png",
+            "sizes": "720x500",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/assets/screenshot-wide.png",
+            "type": "image/png",
+            "sizes": "720x500",
+            "form_factor": "wide"
+        }
+    ]
+}
