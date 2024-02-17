@@ -23,7 +23,7 @@ exports.summaryArticle = onRequest({cors: true },async (request, response) => {
     if(article?.content) {
         const plainContent = article.content.replace(/(<([^>]+)>)/gi, "")
     
-        const result = await model.generateContent(`นี่เป็นบทความจาก เว็บไซต์ ${request.body.url} ช่วยสรุปบทความนี้ให้เหลือ 250 ตัวอักษร เป็นภาษาไทย ${plainContent}`);
+        const result = await model.generateContent(`นี่เป็นบทความจาก เว็บไซต์ ${request.body.url} ช่วยสรุปบทความนี้ให้เหลือ 500 ตัวอักษร เป็นภาษาไทย ${plainContent}`);
         const geminiResponse = await result.response;
         const text = geminiResponse.text();
         response.send({

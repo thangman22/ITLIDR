@@ -15,6 +15,15 @@
             "type": "image/png"
         }
     ],
+    "share_target": {
+        "action": "/",
+        "method": "GET",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url"
+        }
+    },
     "orientation": "portrait",
     "display": "standalone",
     "dir": "auto",

@@ -78,6 +78,22 @@
           });
         },
         mounted() {
+
+          const params = new Proxy(new URLSearchParams(window.location.search), {
+            get: (searchParams, prop) => searchParams.get(prop)
+          })
+
+          if (params.text) {
+            if (params.text.includes('https://')) {
+              params.url = params.text
+            }
+          }
+
+          if(params.url) {
+            this.webUrl = params.url
+            this.onSubmit()
+          }
+
           if (localStorage.getItem("bookmark")) {
             this.bookmark = JSON.parse(localStorage.getItem("bookmark"));
           } else {
@@ -109,7 +125,9 @@
             this.pushUIState(() => {
               this.summaryResponse = data;
             });
-          } catch (error) {}
+          } catch (error) {
+            alert('Cannot extract article content from the given URL. Please check the URL and try again.')
+          }
 
           this.pushUIState(() => {
             this.loading = false;
