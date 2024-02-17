@@ -12,7 +12,6 @@ exports.summaryArticle = onRequest({cors: true, region: 'asia-southeast1' },asyn
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             }
         });
-        console.log(article)
     } catch (error) {
         response.status(400).send({
             status: "error",
@@ -23,7 +22,7 @@ exports.summaryArticle = onRequest({cors: true, region: 'asia-southeast1' },asyn
     if(article?.content) {
         const plainContent = article.content.replace(/(<([^>]+)>)/gi, "")
     
-        const result = await model.generateContent(`นี่เป็นบทความจาก เว็บไซต์ ${request.body.url} ช่วยสรุปบทความนี้ให้เหลือ 500 ตัวอักษร เป็นภาษาไทย ${plainContent}`);
+        const result = await model.generateContent(`This is an article or news from website ${request.body.source} Please summary to 1 paragraph or 500 charecter in original lanaguage ${plainContent}`);
         const geminiResponse = await result.response;
         const text = geminiResponse.text();
         response.send({
