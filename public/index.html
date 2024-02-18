@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ITLIDR - It Too Long I Don't Read</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" href="/assets/favicon.png" />
@@ -14,146 +13,14 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <script
-      src="https://kit.fontawesome.com/8ad8bff283.js"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
-    <style>
-      body {
-        font-family: system-ui;
-        font-optical-sizing: auto;
-      }
-      h2,
-      h1 {
-        font-family: "Noto Sans Thai", sans-serif, system-ui;
-        font-optical-sizing: auto;
-      }
-      #loading-spinner {
-        view-transition-name: loading-spinner;
-      }
-      #logo {
-        view-transition-name: logo;
-      }
-      #url-form {
-        view-transition-name: url-form;
-      }
-    </style>
-    <script type="module">
-      import { createApp } from "https://unpkg.com/petite-vue?module";
-      createApp({
-        count: 0,
-        webUrl: null,
-        loading: false,
-        summaryResponse: null,
-        canShare: false,
-        bookmark: [],
-        async pushUIState(cb) {
-          if (!document.startViewTransition) {
-            cb();
-          } else {
-            document.startViewTransition(() => {
-              cb();
-            });
-          }
-        },
-        async openShareDialog() {
-          await navigator.share({
-            title: "",
-            text: this.summaryResponse.sumamry.replace(/(<([^>]+)>)/gi, ""),
-            url: this.summaryResponse.url,
-          });
-        },
-        async saveBookmark() {
-          this.pushUIState(() => {
-            this.bookmark[this.summaryResponse.url] = this.summaryResponse;
-            this.summaryResponse = null;
-            localStorage.setItem("bookmark", JSON.stringify(this.bookmark));
-          });
-        },
-        async deleteBookmark(url) {
-          this.pushUIState(() => {
-            delete this.bookmark[url];
-            localStorage.setItem("bookmark", JSON.stringify(this.bookmark));
-          });
-        },
-        mounted() {
-          const params = new Proxy(
-            new URLSearchParams(window.location.search),
-            {
-              get: (searchParams, prop) => searchParams.get(prop),
-            }
-          );
-
-          if (params.title) {
-            if (params.title.includes("https://")) {
-              params.url = params.title;
-            }
-          }
-
-          if (params.text) {
-            if (params.text.includes("https://")) {
-              params.url = params.text;
-            }
-          }
-
-          if (params.url) {
-            this.webUrl = params.url;
-            this.onSubmit();
-          }
-
-          if (localStorage.getItem("bookmark")) {
-            this.bookmark = JSON.parse(localStorage.getItem("bookmark"));
-          } else {
-            this.bookmark = {};
-          }
-          if (!navigator.canShare) {
-            this.canShare = false;
-          } else {
-            this.canShare = true;
-          }
-        },
-        async onSubmit() {
-          this.pushUIState(() => {
-            this.loading = true;
-            this.summaryResponse = null;
-          });
-
-          try {
-            if (this.bookmark[this.webUrl]) {
-              return;
-            }
-            const { data } = await axios.post(
-              "http://localhost:5001/givemeshort-aa36e/asia-southeast1/summaryArticle",
-              {
-                url: this.webUrl,
-              }
-            );
-            data.sumamry = marked.parse(data.sumamry.replace(/\n/g, "<br />"));
-            this.pushUIState(() => {
-              this.summaryResponse = data;
-            });
-          } catch (error) {
-            alert(
-              "Cannot extract article content from the given URL. Please check the URL and try again."
-            );
-          }
-
-          this.pushUIState(() => {
-            this.loading = false;
-          });
-        },
-      }).mount();
-    </script>
+    <link href="/style.css" rel="stylesheet" />
   </head>
   <body class="bg-slate-950">
     <div
       :class="
   [
     'bg-slate-950 flex items-center justify-center',
-    !summaryResponse && Object.values(bookmark).length === 0 ? 'h-screen' : null
+    !summaryResponse && Object.values(bookmark).length === 0 ? 'h-dvh' : null
   ]"
       v-scope
       @vue:mounted="mounted"
@@ -173,6 +40,8 @@
         <form class="flex" @submit.prevent="onSubmit" id="url-form">
           <input
             type="url"
+            id="url-input"
+            onclick="this.select()"
             class="p-4 rounded-full bg-slate-800 md:w-11/12 w-10/12 text-slate-400 text-base"
             placeholder="Type news / article URL I will read it..."
             v-model="webUrl"
@@ -190,7 +59,15 @@
           id="loading-spinner"
           v-if="loading"
         >
-        <dotlottie-player src="https://lottie.host/8caf138b-bbf1-4d70-87ae-3257b4421552/TQR3vKwi7B.json" background="transparent" speed="1" style="width: 100px; height: 100px;" loop autoplay class="m-auto"></dotlottie-player>
+          <dotlottie-player
+            src="https://lottie.host/8caf138b-bbf1-4d70-87ae-3257b4421552/TQR3vKwi7B.json"
+            background="transparent"
+            speed="1"
+            style="width: 100px; height: 100px"
+            loop
+            autoplay
+            class="m-auto"
+          ></dotlottie-player>
         </div>
         <div
           class="p-2 border-b border-slate-300"
@@ -270,9 +147,132 @@
         </div>
       </div>
     </div>
-    <footer class="bottom-0 absolute pb-4 text-slate-200 text-xs w-full text-center bg-slate-950">
+    <footer
+      class="bottom-0 absolute pb-4 text-slate-200 text-xs w-full text-center bg-slate-950"
+    >
       Build with 🧡 by
       <a href="https://thangman22.com/" target="_blank">@thangman22</a>
     </footer>
+    <script
+      src="https://kit.fontawesome.com/8ad8bff283.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script
+      src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"
+      type="module"
+    ></script>
+    <script type="module">
+      import { createApp } from "https://unpkg.com/petite-vue?module";
+      createApp({
+        count: 0,
+        webUrl: null,
+        loading: false,
+        summaryResponse: null,
+        canShare: false,
+        bookmark: [],
+        async pushUIState(cb) {
+          if (!document.startViewTransition) {
+            cb();
+          } else {
+            document.startViewTransition(() => {
+              cb();
+            });
+          }
+        },
+        async openShareDialog() {
+          await navigator.share({
+            title: "",
+            text: this.summaryResponse.sumamry.replace(/(<([^>]+)>)/gi, ""),
+            url: this.summaryResponse.url,
+          });
+        },
+        async saveBookmark() {
+          this.pushUIState(() => {
+            this.bookmark[this.summaryResponse.url] = this.summaryResponse;
+            this.summaryResponse = null;
+            localStorage.setItem("bookmark", JSON.stringify(this.bookmark));
+          });
+        },
+        async deleteBookmark(url) {
+          this.pushUIState(() => {
+            delete this.bookmark[url];
+            localStorage.setItem("bookmark", JSON.stringify(this.bookmark));
+          });
+        },
+        mounted() {
+          const params = new Proxy(
+            new URLSearchParams(window.location.search),
+            {
+              get: (searchParams, prop) => searchParams.get(prop),
+            }
+          );
+          let initUrl = null;
+          if (!params.url) {
+            if (params.title) {
+              if (params.title.includes("https://")) {
+                initUrl = params.title;
+              }
+            }
+
+            if (params.text) {
+              if (params.text.includes("https://")) {
+                initUrl = params.text;
+              }
+            }
+          } else {
+            initUrl = params.url;
+          }
+
+          if (initUrl) {
+            this.webUrl = initUrl;
+            this.onSubmit();
+          }
+
+          if (localStorage.getItem("bookmark")) {
+            this.bookmark = JSON.parse(localStorage.getItem("bookmark"));
+          } else {
+            this.bookmark = {};
+          }
+          if (!navigator.canShare) {
+            this.canShare = false;
+          } else {
+            this.canShare = true;
+          }
+        },
+        async onSubmit() {
+          this.summaryResponse = null;
+          this.pushUIState(() => {
+            this.loading = true;
+          });
+
+          try {
+            if (this.bookmark[this.webUrl]) {
+              return;
+            }
+            const { data } = await axios.post(
+              "/summaryArticle",
+              // "http://localhost:5001/givemeshort-aa36e/asia-southeast1/summaryArticle",
+              {
+                url: this.webUrl,
+              }
+            );
+            data.sumamry = marked.parse(data.sumamry.replace(/\n/g, "<br />"));
+            this.pushUIState(() => {
+              this.summaryResponse = data;
+            });
+          } catch (error) {
+            alert(
+              "Cannot extract article content from the given URL. Please check the URL and try again."
+            );
+          }
+
+          this.pushUIState(() => {
+            this.loading = false;
+          });
+        },
+      }).mount();
+    </script>
   </body>
 </html>

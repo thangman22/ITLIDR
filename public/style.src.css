@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: system-ui;
+    font-optical-sizing: auto;
+  }
+  h2,
+  h1 {
+    font-family: "Noto Sans Thai", sans-serif, system-ui;
+    font-optical-sizing: auto;
+  }
+  #loading-spinner {
+    view-transition-name: loading-spinner;
+  }
+  #logo {
+    view-transition-name: logo;
+  }
+  #url-form {
+    view-transition-name: url-form;
+  }
