@@ -165,6 +165,14 @@
     ></script>
     <script type="module">
       import { createApp } from "https://unpkg.com/petite-vue?module";
+
+      window.addEventListener("load", async () => {
+        // Is service worker available?
+        if ("serviceWorker" in navigator) {
+          await navigator.serviceWorker.register("/sw.js")
+        }
+      });
+
       createApp({
         count: 0,
         webUrl: null,

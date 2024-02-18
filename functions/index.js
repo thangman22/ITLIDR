@@ -1,11 +1,11 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { defineSecret } = require("firebase-functions/params");
+const { defineString } = require("firebase-functions/params");
 
-const geminiKey = defineSecret("GEMINI_KEY");
+const geminiKey = defineString("GEMINI_KEY");
 
 exports.summaryArticle = onRequest(
-  { cors: true, region: "asia-southeast1", secrets: [geminiKey] },
+  { cors: true, region: "asia-southeast1" },
   async (request, response) => {
     const apiKey = geminiKey.value();
     const { extract } = await import("@extractus/article-extractor");
@@ -24,6 +24,7 @@ exports.summaryArticle = onRequest(
         }
       );
     } catch (error) {
+      console.log(error);
       response.status(400).send({
         status: "error",
         text: "Cannot extract article content from the given URL. Please check the URL and try again.",
@@ -32,10 +33,8 @@ exports.summaryArticle = onRequest(
 
     if (article?.content) {
       const plainContent = article.content.replace(/(<([^>]+)>)/gi, "");
-
-      const result = await model.generateContent(
-        `This is an article or news from website ${request.body.source} Please summary to 1 paragraph or 500 charecter in original lanaguage ${plainContent}`
-      );
+      const prompt = `This is an article or news from website ${request.body.source} Please summary to 1 paragraph or 500 charecter in the same of article lanaguage ${plainContent}`;
+      const result = await model.generateContent(prompt);
       const geminiResponse = await result.response;
       const text = geminiResponse.text();
       response.send({

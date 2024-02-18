@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build-tailwind": "tailwindcss -i ./public/style.src.css -o ./public/style.css"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.2.1"
   },
