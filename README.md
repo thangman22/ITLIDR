@@ -7,3 +7,4 @@ Try this app at [ITLIDR.thangman22.com](https://ITLIDR.thangman22.com)
 
 ![ITLIDR](https://itlidr.thangman22.com/assets/screenshot-wide.png "ITLIDR Screenshot")
 
+Google Cloud credits are provided for this project. #GeminiSprint

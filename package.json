@@ -1,9 +1,14 @@
 {
   "scripts": {
-    "build-tailwind": "tailwindcss -i ./public/style.src.css -o ./public/style.css"
+    "build-tailwind": "tailwindcss -i ./public/style.src.css -o ./public/style.css",
+    "build-tailwind:watch": "tailwindcss -i ./public/style.src.css -o ./public/style.css -w",
+    "build-workbox": "workbox generateSW workbox-config.js",
+    "deploy": "npm run build-tailwind && npm run build-workbox && firebase deploy --only=functions && firebase deploy --only=hosting",
+    "dev": "firebase serve"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.2.1"
+    "@google/generative-ai": "^0.2.1",
+    "cld": "^2.9.1"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.1"

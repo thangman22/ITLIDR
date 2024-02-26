@@ -12,6 +12,14 @@
         "function": "summaryArticle"
       },
       {
+        "source": "/askArticle",
+        "function": "askArticle"
+      },
+      {
+        "source": "/imageProxy",
+        "function": "imageProxy"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
