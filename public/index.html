@@ -104,29 +104,37 @@
               v-html="summaryResponse.summary"
             ></p>
           </a>
-          <div
-            v-if="answer[btoa(summaryResponse.url)]"
-            class="text-sm text-slate-300 border-slate-800 border p-2 rounded-md mt-2"
-          >
-            <span class="m-1 text-slate-700"
-              ><i class="fa-solid fa-sparkles"></i> Answer from AI</span
-            >
-            <span
-              v-html="answer[btoa(summaryResponse.url)].summary"
-              class="answer"
-            ></span>
+          <div class="text-slate-500 mt-7 text-sm">
+            <span v-if="suggestedQuestions.length > 0" class="font-bold mb-2 text-slate-300">Ask questions to the article</span>
+            <ul>
+              <li v-for="q of suggestedQuestions" :key="q" class="my-1 px-2 py-1.5 border border-slate-800 rounded-lg cursor-pointer" @click="chooseQuestion(q.question, summaryResponse.url)">{{q.question}}</li>
+            </ul>
           </div>
+          <div
+          v-if="answer[btoa(summaryResponse.url)]"
+          class="text-sm text-slate-300 border-slate-800 border p-2 rounded-md mt-2"
+        >
+          <span class="m-1 text-slate-700"
+            ><i class="fa-solid fa-sparkles"></i> Answer from AI</span
+          >
+          <span
+            v-html="answer[btoa(summaryResponse.url)].summary"
+            class="answer"
+          ></span>
+        </div>
           <form
             autocomplete="off"
             @submit.prevent="onAskQuestion"
             class="flex text-sm bg-slate-800 p-1 mt-3 mb-1 rounded-lg"
+            :id="`questionForm-${btoa(summaryResponse.url)}`"
           >
             <input
               :id="`question_input_${btoa(summaryResponse.url)}`"
               class="w-11/12 bg-slate-800 p-1 placeholder:text-slate-500 text-slate-500"
-              placeholder="Type to Ask something to this article"
+              placeholder="Or type your question"
               type="text"
               :disabled="loadAnswer"
+              :value="currentQuestion[btoa(summaryResponse.url)] || ''"
               name="question"
             />
             <button
@@ -208,7 +216,7 @@
             <input
               :id="`question_input_${btoa(content.url)}`"
               class="w-11/12 bg-slate-800 p-1 placeholder:text-slate-500 text-slate-500"
-              placeholder="Type to Ask something to this article"
+              placeholder="Or type your question"
               type="text"
               :disabled="loadAnswer"
               name="question"
@@ -290,6 +298,8 @@
         bookmark: [],
         answer: {},
         loadAnswer: false,
+        currentQuestion: {},
+        suggestedQuestions: [],
         apiHost: "",
         async pushUIState(cb) {
           if (!document.startViewTransition) {
@@ -300,26 +310,33 @@
             });
           }
         },
+        async chooseQuestion(question,url) {
+          this.currentQuestion[btoa(url)] = question
+          this.askQuestionAction(url, question)
+        },
         async onAskQuestion(submitEvent) {
+          this.askQuestionAction(submitEvent.target.elements.postUrl.value, submitEvent.target.elements.question)
+        },
+        async askQuestionAction (postUrl, question) {
           this.loadAnswer = true;
           try {
             const { data } = await axios.post(
               `${this.apiHost}/askArticle`,
               {
-                url: submitEvent.target.elements.postUrl.value,
-                question: submitEvent.target.elements.question.value,
+                url: postUrl,
+                question,
               }
             );
             data.summary = marked.parse(data.summary.replace(/\n/g, "<br />"));
             this.pushUIState(() => {
-              this.answer[btoa(submitEvent.target.elements.postUrl.value)] =
+              this.answer[btoa(postUrl)] =
                 data;
             });
           } catch (error) {}
-          submitEvent.target.elements.question.value = ''
+          document.getElementById(`question_input_${btoa(postUrl)}`).value = ''
           setTimeout(() => {
             this.pushUIState(() => {
-              document.getElementById(`question_input_${btoa(submitEvent.target.elements.postUrl.value)}`).scrollIntoView();
+              document.getElementById(`question_input_${btoa(postUrl)}`).scrollIntoView();
             });
           }, 500);
           this.loadAnswer = false;
@@ -397,12 +414,23 @@
             }
           }
         },
+        async getRelatedQuestion(url) {
+          this.suggestedQuestions = []
+          const { data } = await axios.post(
+              `${this.apiHost}/getRelatedQuestion`,
+              {
+                url
+              }
+            );
+          this.suggestedQuestions = data.questions
+        },
         async summaryContent(url, mode) {
+
           let paragraph = 1
           if(url && typeof url === 'string') {
             this.webUrl = url
           }
-
+          this.getRelatedQuestion(this.webUrl)
           if(mode === 'load_more') {
             paragraph = 3
           }
